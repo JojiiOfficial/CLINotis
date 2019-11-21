@@ -66,7 +66,7 @@ func (c *Config) save() {
 		fmt.Println("Error saving json: " + err.Error())
 		os.Exit(1)
 	}
-	err = ioutil.WriteFile(file, b, 0600)
+	err = ioutil.WriteFile(file, b, 666)
 	if err != nil {
 		fmt.Println("Error saving json: " + err.Error())
 		os.Exit(1)

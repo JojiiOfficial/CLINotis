@@ -5,10 +5,12 @@ import (
 	"io/ioutil"
 	"os"
 
+	_ "github.com/JojiiOfficial/SystemdGoService"
 	dbus "github.com/godbus/dbus"
 )
 
 var messageFile = "/tmp/snaOTSPrdc"
+var serviceName = "dbusmsgreceiver"
 
 func main() {
 	conf := getConf()
@@ -18,6 +20,8 @@ func main() {
 			msgServer(conf)
 		} else if arg == "check" {
 			check(conf)
+		} else if arg == "install" {
+			install()
 		}
 	} else {
 		showMessages(conf)
@@ -67,7 +71,7 @@ func showMessages(conf *Config) {
 }
 
 func writeMessage(message, file string) {
-	f, err := os.OpenFile(file, os.O_APPEND|os.O_WRONLY, 0600)
+	f, err := os.OpenFile(file, os.O_APPEND|os.O_WRONLY, 666)
 	if err != nil {
 		panic(err)
 	}
