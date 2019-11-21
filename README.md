@@ -1,5 +1,5 @@
 # CLINotis
-This is a simple tool to view new notifications from your desktopenvironment in you terminal.
+This is a simple tool to view new notifications from your desktopenvironment in your terminal.
 
 # Requirements
 - go1.13
