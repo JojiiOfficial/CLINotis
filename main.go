@@ -86,7 +86,7 @@ func writeMessage(message, file string) {
 func check(conf *Config) {
 	d, err := os.Stat(messageFile)
 	if err == nil && d.Size() > 0 && conf.LastCheck < d.ModTime().Unix() {
-		fmt.Println(1)
+		fmt.Println("You have a new notification")
 		conf.LastCheck = d.ModTime().Unix()
 		conf.save()
 	}

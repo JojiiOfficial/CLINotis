@@ -10,12 +10,4 @@ if [ -f "/bin/noti" ]; then
 fi
 
 sudo mv noti /bin/noti &&
-sudo /bin/noti install &&
-cat >./checkNewMsg.sh<<EOL
-#!/bin/bash
-e=\$(/bin/noti check)
-if [ ! -z "\$e" ]; then
-		echo "You have a new message"
-fi
-EOL
-chmod u+x ./checkNewMsg.sh
+sudo /bin/noti install
