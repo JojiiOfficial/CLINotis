@@ -1,10 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
-	"path"
-	"path/filepath"
 
 	"github.com/JojiiOfficial/SystemdGoService"
 )
@@ -20,15 +19,20 @@ func install() {
 		panic(err)
 	}
 
+	reader := bufio.NewReader(os.Stdin)
+	i, t := WaitForMessage("Which user is using the Desktop environment? ", reader)
+	if i != 1 {
+		os.Exit(1)
+		return
+	}
+
 	service := SystemdGoService.NewDefaultService(serviceName, "Show DBus messages in cli", ex+" server")
-	service.Service.User = "root"
-	service.Service.Group = "root"
+	service.Service.User = t
+	service.Service.Group = t
 	service.Service.SuccessExitStatus = "2"
 	service.Service.Restart = SystemdGoService.OnSuccess
-	cpath, _ := filepath.Abs(ex)
-	cpath, _ = path.Split(cpath)
-	service.Service.WorkingDirectory = cpath
 	service.Service.RestartSec = "20"
+	service.Install.Also = "dbus.service"
 	err = service.Create()
 	if err == nil {
 		err := service.Enable()
