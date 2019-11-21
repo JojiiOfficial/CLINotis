@@ -11,13 +11,19 @@ import (
 var messageFile = "/tmp/snaOTSPrdc"
 
 func main() {
-	if len(os.Args) > 1 && os.Args[1] == "server" {
-		msgServer()
+	conf := getConf()
+	if len(os.Args) > 1 {
+		arg := os.Args[1]
+		if arg == "server" {
+			msgServer(conf)
+		} else if arg == "check" {
+			check(conf)
+		}
 	} else {
-		showMessages()
+		showMessages(conf)
 	}
 }
-func msgServer() {
+func msgServer(conf *Config) {
 	conn, err := dbus.SessionBus()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Failed to connect to session bus:", err)
@@ -25,7 +31,10 @@ func msgServer() {
 	}
 
 	var rules = []string{
+		"type='signal',member='Notify',path='/org/freedesktop/Notifications',interface='org.freedesktop.Notifications'",
 		"type='method_call',member='Notify',path='/org/freedesktop/Notifications',interface='org.freedesktop.Notifications'",
+		"type='method_return',member='Notify',path='/org/freedesktop/Notifications',interface='org.freedesktop.Notifications'",
+		"type='error',member='Notify',path='/org/freedesktop/Notifications',interface='org.freedesktop.Notifications'",
 	}
 	var flag uint = 0
 
@@ -47,7 +56,7 @@ func msgServer() {
 	}
 }
 
-func showMessages() {
+func showMessages(conf *Config) {
 	b, err := ioutil.ReadFile(messageFile)
 	if err != nil {
 		fmt.Println("Error reading file: " + err.Error())
@@ -67,5 +76,14 @@ func writeMessage(message, file string) {
 
 	if _, err = f.WriteString(message + "\n"); err != nil {
 		panic(err)
+	}
+}
+
+func check(conf *Config) {
+	d, err := os.Stat(messageFile)
+	if err == nil && d.Size() > 0 && conf.LastCheck < d.ModTime().Unix() {
+		fmt.Println(1)
+		conf.LastCheck = d.ModTime().Unix()
+		conf.save()
 	}
 }
